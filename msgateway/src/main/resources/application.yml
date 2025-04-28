@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: msgateway
+  cloud:
+    gateway:
+      routes:
+        - id: profile-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/v1/profiles/**
+
+        - id: store-of-value-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/v1/accounts/**
+
+
+app:
+  auth-config:
+    username: "admin"
+    password: "5$kb)N>G1%oG58z"
+    jwt-secret: "fnztEskaI5F0PYO9BU/HkQbzCjxABJsODPAb6d7x9nM="
+    jwt-expiration-ms: 3600000 # 1 hour in milliseconds
