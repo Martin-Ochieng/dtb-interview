@@ -1,13 +1,5 @@
-# Dockerfile (for your Java API only)
-FROM eclipse-temurin:21-jre-alpine
+# syntax=docker/dockerfile:1.3
 
-WORKDIR /app
-
-COPY target/*.jar app.jar
-
-EXPOSE 8080
-
-CMD ["java", "-jar", "/app/app.jar"]
 # ================================
 # Stage 1: Build with Maven
 # ================================
@@ -15,27 +7,38 @@ FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
 
 WORKDIR /app
 
-# Copy pom and download deps (better caching)
+# Copy only pom.xml to leverage Docker cache for dependencies
 COPY pom.xml .
-RUN mvn dependency:go-offline
 
-# Now copy the source code
+# Download dependencies (using cache mount)
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn dependency:go-offline
+
+# Copy the rest of the source code
 COPY src ./src
 
-# Build the jar
-RUN mvn clean package -DskipTests
-
+# Build the JAR file
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn clean package -DskipTests
 
 # ================================
-# Stage 2: Run
+# Stage 2: Run with JRE only
 # ================================
 FROM eclipse-temurin:21-jre-alpine
 
+# Create a non-root user
+RUN addgroup -S spring && adduser -S spring -G spring
+
 WORKDIR /app
 
-# Copy jar from the previous stage
+# Copy only the generated JAR from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
+# Run the app as a non-root user
+USER spring
+
+# Expose the Spring Boot port
 EXPOSE 8080
 
-CMD ["java", "-jar", "/app/app.jar"]
+# Run the JAR
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

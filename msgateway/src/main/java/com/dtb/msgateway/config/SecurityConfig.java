@@ -17,7 +17,17 @@ public class SecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/auth/**").permitAll()
+                        .pathMatchers(
+                                "/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/webjars/**", // if using Swagger WebJars
+                                "/msprofile/swagger-ui.html",
+                                "/msaccount/swagger-ui.html",
+                                "/mspayment/swagger-ui.html",
+                                "/msevents/swagger-ui.html"
+                        ).permitAll()
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)

@@ -7,16 +7,67 @@ spring:
   cloud:
     gateway:
       routes:
+
+        # Main service routes - JWT will be passed by client and validated by JwtAuthenticationFilter
         - id: profile-service
-          uri: http://localhost:8081
+          uri: http://msprofile:8081
           predicates:
             - Path=/api/v1/profiles/**
 
-        - id: store-of-value-service
-          uri: http://localhost:8082
+        - id: account-service
+          uri: http://msaccount:8082
           predicates:
             - Path=/api/v1/accounts/**
 
+        - id: payment-service
+          uri: http://mspayment:8083
+          predicates:
+            - Path=/api/v1/payments/**
+
+        - id: events-service
+          uri: http://msevents:8084
+          predicates:
+            - Path=/api/v1/events/**
+
+        # Swagger API Docs through gateway
+        - id: profile-swagger
+          uri: http://msprofile:8081
+          predicates:
+            - Path=/msprofile/swagger-ui.html
+          filters:
+            - RewritePath=/msprofile/swagger-ui.html, /swagger-ui/index.html
+
+        - id: account-swagger
+          uri: http://msaccount:8082
+          predicates:
+            - Path=/msaccount/swagger-ui.html
+          filters:
+            - RewritePath=/msaccount/swagger-ui.html, /swagger-ui/index.html
+
+        - id: payment-swagger
+          uri: http://mspayment:8083
+          predicates:
+            - Path=/mspayment/swagger-ui.html
+          filters:
+            - RewritePath=/mspayment/swagger-ui.html, /swagger-ui/index.html
+
+        - id: events-swagger
+          uri: http://msevents:8084
+          predicates:
+            - Path=/msevents/swagger-ui.html
+          filters:
+            - RewritePath=/msevents/swagger-ui.html, /swagger-ui/index.html
+springdoc:
+  swagger-ui:
+    urls:
+      - name: msprofile
+        url: /msprofile/v3/api-docs
+      - name: msaccount
+        url: /msaccount/v3/api-docs
+      - name: mspayment
+        url: /mspayment/v3/api-docs
+      - name: msevents
+        url: /msevents/v3/api-docs
 
 app:
   auth-config:
