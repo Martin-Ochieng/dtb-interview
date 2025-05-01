@@ -57,6 +57,37 @@ spring:
             - Path=/msevents/swagger-ui.html
           filters:
             - RewritePath=/msevents/swagger-ui.html, /swagger-ui/index.html
+
+        - id: profile-api-docs
+          uri: http://msprofile:8081
+          predicates:
+            - Path=/msprofile/v3/api-docs
+          filters:
+            - RewritePath=/msprofile/v3/api-docs, /v3/api-docs
+
+        - id: account-api-docs
+          uri: http://msaccount:8082
+          predicates:
+            - Path=/msaccount/v3/api-docs
+          filters:
+            - RewritePath=/msaccount/v3/api-docs, /v3/api-docs
+
+        - id: payment-api-docs
+          uri: http://mspayment:8083
+          predicates:
+            - Path=/mspayment/v3/api-docs
+          filters:
+            - RewritePath=/mspayment/v3/api-docs, /v3/api-docs
+
+        - id: events-api-docs
+          uri: http://msevents:8084
+          predicates:
+            - Path=/msevents/v3/api-docs
+          filters:
+            - RewritePath=/msevents/v3/api-docs, /v3/api-docs
+
+
+
 springdoc:
   swagger-ui:
     urls:

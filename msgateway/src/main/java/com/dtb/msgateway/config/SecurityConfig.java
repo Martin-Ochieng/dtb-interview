@@ -26,7 +26,11 @@ public class SecurityConfig {
                                 "/msprofile/swagger-ui.html",
                                 "/msaccount/swagger-ui.html",
                                 "/mspayment/swagger-ui.html",
-                                "/msevents/swagger-ui.html"
+                                "/msevents/swagger-ui.html",
+                                "/msprofile/v3/api-docs",
+                                "/msaccount/v3/api-docs",
+                                "/mspayment/v3/api-docs",
+                                "/msevents/v3/api-docs"
                         ).permitAll()
                         .anyExchange().authenticated()
                 )

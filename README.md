@@ -116,12 +116,13 @@ Each microservice exposes its API specification via Swagger UI. Once the service
 
 These will be unavailable in the production environment, but you can access them locally for testing purposes.
 
-| Service            | Swagger UI URL                                      |
-|--------------------|-----------------------------------------------------|
-| **Profile Service**| [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html) |
-| **Account Service**| [http://localhost:8082/swagger-ui.html](http://localhost:8082/swagger-ui.html) |
-| **Payment Service**| [http://localhost:8083/swagger-ui.html](http://localhost:8083/swagger-ui.html) |
-| **Events Service** | [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html) |
+| Service             | Swagger UI URL                                        |
+|---------------------|-------------------------------------------------------|
+| **Gateway**         | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) |
+| **Profile Service** | [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html) |
+| **Account Service** | [http://localhost:8082/swagger-ui.html](http://localhost:8082/swagger-ui.html) |
+| **Payment Service** | [http://localhost:8083/swagger-ui.html](http://localhost:8083/swagger-ui.html) |
+| **Events Service**  | [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html) |
 
 These Swagger UI pages allow you to explore and interact with the APIs for each service.
 
