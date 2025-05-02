@@ -138,8 +138,17 @@ These will be available in the production environment, but you can access them l
 Please import the collection into Postman to test the APIs.
 
 ```bash
+# Postman Collection Via Localhost:port
 https://winter-resonance-137063.postman.co/workspace/DTB~88860ac6-6b26-4ab7-8439-2e30b715e694/collection/5790632-f990ba72-52e1-4397-99b7-c120dc0a73a7?action=share&creator=5790632
 ```
+````bash
+# Postman Collection Via Nginx
+
+https://winter-resonance-137063.postman.co/workspace/DTB~88860ac6-6b26-4ab7-8439-2e30b715e694/collection/5790632-e081cad6-6d7d-493e-a8c6-013f1a8d8de6?action=share&creator=5790632
+
+````
+
+
 ---
 
 
