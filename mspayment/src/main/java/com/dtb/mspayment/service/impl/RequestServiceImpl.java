@@ -35,6 +35,7 @@ public class RequestServiceImpl implements RequestService {
     private final Logging logging = new Logging();
 
 
+
     @Override
     public Mono<ApiResponse> withdrawalDeposit(WithdrawalDeposit request, Map<String, String> headers) {
         long startTime = System.currentTimeMillis();
@@ -49,7 +50,7 @@ public class RequestServiceImpl implements RequestService {
                     }
 
                     return accountRepository.findById(request.getAccountId())
-
+                            .switchIfEmpty(Mono.error(new IllegalArgumentException("Account not found")))
                             .flatMap(account -> {
                                 BigDecimal amount = request.getAmount();
                                 String type = request.getType();
@@ -65,43 +66,42 @@ public class RequestServiceImpl implements RequestService {
                                         ));
                                     }
                                     account.setBalance(account.getBalance().subtract(amount));
-                                } else  {
+                                } else {
                                     account.setBalance(account.getBalance().add(amount));
                                 }
 
                                 Transaction transaction = Transaction.builder()
                                         .accountId(account.getId())
                                         .type("TRANSFER")
-                                        .amount(request.getAmount())
-                                        .relatedAccount(request.getAccountId()) // Ensure request has this field
+                                        .amount(amount)
+                                        .relatedAccount(request.getAccountId())
                                         .createdAt(OffsetDateTime.now())
                                         .build();
 
                                 return transactionRepository.save(transaction)
-                                        .map(savedTransaction -> {
-
-                                            rabbitMqProducer.sendMessage("Transaction :"+ transaction.getId()+" completed successfully",
-                                                    request.getEmail());
-
-                                                       return new ApiResponse(
-                                                configs.getResponseConfig().getSuccessResponseCode(),
-                                                configs.getResponseConfig().getSuccessResponseMessage(),
-                                                configs.getResponseConfig().getSuccessCustomerMessage(),
-                                                request.getRefId(),
-                                                transaction
+                                        .flatMap(savedTransaction ->
+                                                accountRepository.save(account)
+                                                        .then(Mono.fromRunnable(() ->
+                                                                rabbitMqProducer.sendMessage(
+                                                                        "Transaction :" + savedTransaction.getId() + " completed successfully",
+                                                                        request.getEmail()
+                                                                )
+                                                        ))
+                                                        .thenReturn(new ApiResponse(
+                                                                configs.getResponseConfig().getSuccessResponseCode(),
+                                                                configs.getResponseConfig().getSuccessResponseMessage(),
+                                                                configs.getResponseConfig().getSuccessCustomerMessage(),
+                                                                request.getRefId(),
+                                                                savedTransaction
+                                                        ))
                                         );
-                                                }
-
-                                        );
-                            }).switchIfEmpty(Mono.defer(()-> Mono.error(new IllegalArgumentException("Account not found"))));
+                            });
                 })
                 .onErrorResume(error -> {
                     String msg = error.getMessage();
                     String code = configs.getResponseConfig().getFailedResponseCode();
-                    String userMsg = error.getMessage();
 
-
-                    ApiResponse errorResponse = new ApiResponse(code, msg, userMsg, request.getRefId(), null);
+                    ApiResponse errorResponse = new ApiResponse(code, msg, msg, request.getRefId(), null);
 
                     logging.setLogLevel("error")
                             .setTransactionID(request.getRefId())
